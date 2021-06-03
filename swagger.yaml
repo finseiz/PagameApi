@@ -1,718 +1,4071 @@
----
-swagger: "2.0"
+swagger: '2.0'
 info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
+  description: Api Documentation
+  version: '1.0'
+  title: Api Documentation
+  termsOfService: 'urn:tos'
+  contact: {}
   license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+host: pagame-test.appspot.com
+basePath: /
 tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
+  - name: Bancolombia
+    description: Provee las funcionalidades requeridas para realizar operaciones con Bancolombia. Los detalles de cada operación se encuentran en cada endpoint
+  - name: Billetera
+    description: Provee las funcionalidades requeridas para consultar información directamente sobre la billetera del usuario. La billetera contiene los movimientos y el saldo actual del corresponsal o aliado
+  - name: Convenios
+    description: 'Provee las funcionalidades requeridas para buscar y pagar facturas mediante convenios. Esta operación se conoce como recaudo, y puede ir desde el pago de una factura de servicios públicos hasta el pago de una matrícula. Se soporta el pago de convenios de forma manual y mediante código de barras. Los detalles de cada operación se encuentran en cada endpoint'
+  - name: Historial de Operaciones
+    description: Provee las funcionalidades requeridas para consultar el historial de operaciones de los usuarios
+  - name: Nequi
+    description: Provee las funcionalidades requeridas para realizar operaciones con Nequi. Los detalles de cada operación se encuentran en cada endpoint
+  - name: Operadores y Productos
+    description: Provee las funcionalidades requeridas para realizar consultas de operadores y productos
+  - name: Recargas
+    description: 'Provee las funcionalidades requeridas para realizar recargas de contenido (TV, celular y pines). Los detalles de cada operación se encuentran en cada endpoint. Los códigos de operadores y productos se deben obtener de /api/operadores y /api/productos. Favor consultar la documentación respectiva'
+  - name: Ubicación
+    description: Provee las funcionalidades requeridas para consultar el listado de municipios y departamentos soportados por el sistema
+  - name: Usuario
+    description: Provee las funcionalidades requeridas para acceder y modificar los datos de los usuarios
+  - name: Western Union
+    description: Provee las funcionalidades requeridas para realizar operaciones con Western Union. Los detalles de cada operación se encuentran en cada endpoint
+  - name: davivienda-ext-resource
+    description: Provee las funcionalidades requeridas para realizar operaciones con Davivienda y Daviplata. Los detalles de cada operación se encuentran en cada endpoint
+  - name: sesion-resource
+    description: Sesion Resource
 paths:
-  /pet/{petId}/uploadImage:
+  /api/login:
     post:
       tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
+        - sesion-resource
+      summary: Permite iniciar la sesión de un usuario en la aplicación.
+      operationId: loginUsingPOST
       consumes:
-      - "multipart/form-data"
+        - application/json
       produces:
-      - "application/json"
+        - '*/*'
+        - application/json; charset=UTF-8
       parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
+        - in: body
+          name: credencialesDTO
+          description: credencialesDTO
+          required: true
           schema:
-            $ref: "#/definitions/ApiResponse"
+            $ref: '#/definitions/CredencialesDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
+        - api_key: []
+  /api/sessions/cerrar:
     post:
       tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
+        - sesion-resource
+      summary: Permite cerrar la sesión de un usuario en la aplicación.
+      operationId: cerrarSesionUsingPOST
       consumes:
-      - "application/json"
-      - "application/xml"
+        - application/json
       produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
+        - '*/*'
+        - application/json; charset=UTF-8
       responses:
-        405:
-          description: "Invalid input"
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
+        - api_key: []
+  /api/sessions/reactivar:
+    post:
       tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
+        - sesion-resource
+      summary: 'Permite reactivar la sesión de un usuario '
+      operationId: reactivarSesionUsingPOST
       consumes:
-      - "application/json"
-      - "application/xml"
+        - application/json
       produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
       responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
+        - api_key: []
+  /pagame-api/v1/billetera:
     get:
       tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
+        - Billetera
+      summary: Permite consultar la billetera de un usuario
+      operationId: verBilleteraUsingGET
       produces:
-      - "application/json"
-      - "application/xml"
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
+        - name: username
+          in: query
+          description: username
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/BilleteraDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/billetera/detalle/recarga-cupo:
+    get:
+      tags:
+        - Billetera
+      summary: Permite consultar las recargas de cupo de un corresponsal
+      operationId: verRecargasCupoUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: tx
+          in: query
+          description: tx
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/billetera/movimientos:
+    get:
+      tags:
+        - Billetera
+      summary: Permite consultar los movimientos de una billetera
+      operationId: verMovimientosUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: billeteraId
+          in: query
+          description: Filtro por el identificador del usuario dentro del sistema
+          required: false
+          type: integer
+          format: int64
+        - name: fecha.equal
+          in: query
+          description: Valor para ser usado en una condición equals. No se usa si el valor es null
+          required: false
+          type: string
+          format: date-time
+        - name: fecha.greaterThan
+          in: query
+          description: ' Valor para ser usado en una condición greaterThan. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: fecha.greaterThanOrEqualTo
+          in: query
+          description: ' Valor para ser usado en una condición greaterThanOrEqualTo. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: 'fecha.in[0].dayOfMonth'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].dayOfWeek'
+          in: query
+          required: false
+          type: string
           enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
-    post:
-      tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
+            - FRIDAY
+            - MONDAY
+            - SATURDAY
+            - SUNDAY
+            - THURSDAY
+            - TUESDAY
+            - WEDNESDAY
+        - name: 'fecha.in[0].dayOfYear'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].hour'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].minute'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].month'
+          in: query
+          required: false
+          type: string
+          enum:
+            - APRIL
+            - AUGUST
+            - DECEMBER
+            - FEBRUARY
+            - JANUARY
+            - JULY
+            - JUNE
+            - MARCH
+            - MAY
+            - NOVEMBER
+            - OCTOBER
+            - SEPTEMBER
+        - name: 'fecha.in[0].monthValue'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].nano'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].second'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].year'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: fecha.lessThan
+          in: query
+          description: ' Valor para ser usado en una condición lessThan. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: fecha.lessThanOrEqualTo
+          in: query
+          description: ' Valor para ser usado en una condición lessThanOrEqualTo. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: page
+          in: query
+          description: Página de resultados que desea recibir (0..N)
+          required: false
+          type: integer
+          format: int32
+        - name: paged
+          in: query
+          required: false
+          type: boolean
+        - name: pageNumber
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: size
+          in: query
+          description: Número de registros por página
+          required: false
+          type: integer
+          format: int32
+        - name: sort
+          in: query
+          description: 'Criterios de ordenamiento, con formato: propiedad(,asc|desc).El orden por defecto es ascendente. Se soportan múltiples criterios de ordenamiento.'
+          required: false
+          type: array
           items:
-            $ref: "#/definitions/User"
+            type: string
+          collectionFormat: multi
+        - name: sort.sorted
+          in: query
+          required: false
+          type: boolean
+        - name: sort.unsorted
+          in: query
+          required: false
+          type: boolean
+        - name: unpaged
+          in: query
+          required: false
+          type: boolean
+        - name: username
+          in: query
+          description: Filtro por el nombre de usuario
+          required: false
+          type: string
       responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MovimientoDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/billetera/recarga-cupo:
     get:
       tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
+        - Billetera
+      summary: Permite consultar el historial de recargas de un usuario
+      operationId: consultarRecargasUsingGET
       produces:
-      - "application/json"
-      - "application/xml"
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
       parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: page
+          in: query
+          description: Página de resultados que desea recibir (0..N)
+          required: false
+          type: integer
+          format: int32
+        - name: paged
+          in: query
+          required: false
+          type: boolean
+        - name: pageNumber
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: size
+          in: query
+          description: Número de registros por página
+          required: false
+          type: integer
+          format: int32
+        - name: sobregiro
+          in: query
+          description: Filtro para incluir recargas en las que hubo o no sobregiro
+          required: false
+          type: boolean
+        - name: sort
+          in: query
+          description: 'Criterios de ordenamiento, con formato: propiedad(,asc|desc).El orden por defecto es ascendente. Se soportan múltiples criterios de ordenamiento.'
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: sort.sorted
+          in: query
+          required: false
+          type: boolean
+        - name: sort.unsorted
+          in: query
+          required: false
+          type: boolean
+        - name: unpaged
+          in: query
+          required: false
+          type: boolean
+        - name: username
+          in: query
+          description: Nombre de usuario del corresponsal
+          required: false
+          type: string
       responses:
-        200:
-          description: "successful operation"
+        '200':
+          description: OK
           schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
+            type: array
+            items:
+              $ref: '#/definitions/OperacionDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/billetera/resumen:
+    get:
+      tags:
+        - Billetera
+      summary: Permite consultar el historial de ganancias de un usuario
+      operationId: consultarResumenUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: fechaFinal
+          in: query
+          description: Límite superior para búsqueda por fechas (inclusivo)
+          required: false
+          type: string
+          format: date
+        - name: fechaInicial
+          in: query
+          description: Límite inferior para búsqueda por fechas (inclusivo)
+          required: false
+          type: string
+          format: date
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: page
+          in: query
+          description: Página de resultados que desea recibir (0..N)
+          required: false
+          type: integer
+          format: int32
+        - name: paged
+          in: query
+          required: false
+          type: boolean
+        - name: pageNumber
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: size
+          in: query
+          description: Número de registros por página
+          required: false
+          type: integer
+          format: int32
+        - name: sort
+          in: query
+          description: 'Criterios de ordenamiento, con formato: propiedad(,asc|desc).El orden por defecto es ascendente. Se soportan múltiples criterios de ordenamiento.'
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: sort.sorted
+          in: query
+          required: false
+          type: boolean
+        - name: sort.unsorted
+          in: query
+          required: false
+          type: boolean
+        - name: unpaged
+          in: query
+          required: false
+          type: boolean
+        - name: username
+          in: query
+          description: Nombre de usuario
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ResumenDiarioDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/billetera/resumen-transacciones:
+    get:
+      tags:
+        - Billetera
+      summary: Permite consultar el conteo resumido de transacciones de un usuario
+      operationId: consultarResumenTransaccionesUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: fechaFinal
+          in: query
+          description: Límite superior para búsqueda por fechas (inclusivo)
+          required: false
+          type: string
+          format: date
+        - name: fechaInicial
+          in: query
+          description: Límite inferior para búsqueda por fechas (inclusivo)
+          required: false
+          type: string
+          format: date
+        - name: granularidad
+          in: query
+          description: Granularidad de tiempo de la consulta. Por defecto es igual a 'D'
+          required: false
+          type: string
+          enum:
+            - D
+            - M
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: page
+          in: query
+          description: Página de resultados que desea recibir (0..N)
+          required: false
+          type: integer
+          format: int32
+        - name: paged
+          in: query
+          required: false
+          type: boolean
+        - name: pageNumber
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: size
+          in: query
+          description: Número de registros por página
+          required: false
+          type: integer
+          format: int32
+        - name: sort
+          in: query
+          description: 'Criterios de ordenamiento, con formato: propiedad(,asc|desc).El orden por defecto es ascendente. Se soportan múltiples criterios de ordenamiento.'
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: sort.sorted
+          in: query
+          required: false
+          type: boolean
+        - name: sort.unsorted
+          in: query
+          required: false
+          type: boolean
+        - name: unpaged
+          in: query
+          required: false
+          type: boolean
+        - name: username
+          in: query
+          description: Nombre de usuario
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TransaccionResumenDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones:
+    get:
+      tags:
+        - Historial de Operaciones
+      summary: Permite consultar el historial de transacciones de un usuario
+      operationId: consultarOperacionesUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: codAprobacion
+          in: query
+          description: Código de aprobación de la operación
+          required: false
+          type: string
+        - name: estado
+          in: query
+          description: Estado de la operación
+          required: false
+          type: string
+          enum:
+            - ACEPTADA
+            - CREADA
+            - PENDIENTE
+            - RECHAZADA
+        - name: fecha.equal
+          in: query
+          description: Valor para ser usado en una condición equals. No se usa si el valor es null
+          required: false
+          type: string
+          format: date-time
+        - name: fecha.greaterThan
+          in: query
+          description: ' Valor para ser usado en una condición greaterThan. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: fecha.greaterThanOrEqualTo
+          in: query
+          description: ' Valor para ser usado en una condición greaterThanOrEqualTo. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: 'fecha.in[0].dayOfMonth'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].dayOfWeek'
+          in: query
+          required: false
+          type: string
+          enum:
+            - FRIDAY
+            - MONDAY
+            - SATURDAY
+            - SUNDAY
+            - THURSDAY
+            - TUESDAY
+            - WEDNESDAY
+        - name: 'fecha.in[0].dayOfYear'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].hour'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].minute'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].month'
+          in: query
+          required: false
+          type: string
+          enum:
+            - APRIL
+            - AUGUST
+            - DECEMBER
+            - FEBRUARY
+            - JANUARY
+            - JULY
+            - JUNE
+            - MARCH
+            - MAY
+            - NOVEMBER
+            - OCTOBER
+            - SEPTEMBER
+        - name: 'fecha.in[0].monthValue'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].nano'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].second'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: 'fecha.in[0].year'
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: fecha.lessThan
+          in: query
+          description: ' Valor para ser usado en una condición lessThan. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: fecha.lessThanOrEqualTo
+          in: query
+          description: ' Valor para ser usado en una condición lessThanOrEqualTo. No se usa si el valor es null'
+          required: false
+          type: string
+          format: date-time
+        - name: idTipoOperacion
+          in: query
+          description: El identificador del tipo de operación. Puede ser una lista en caso de que se desee buscar por varios tipos simultáneamente
+          required: false
+          type: array
+          items:
+            type: integer
+            format: int64
+          collectionFormat: multi
+        - name: nombreCliente
+          in: query
+          description: Nombre del cliente que solicitó la operación al corresponsal
+          required: false
+          type: string
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: page
+          in: query
+          description: Página de resultados que desea recibir (0..N)
+          required: false
+          type: integer
+          format: int32
+        - name: paged
+          in: query
+          required: false
+          type: boolean
+        - name: pageNumber
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: size
+          in: query
+          description: Número de registros por página
+          required: false
+          type: integer
+          format: int32
+        - name: sort
+          in: query
+          description: 'Criterios de ordenamiento, con formato: propiedad(,asc|desc).El orden por defecto es ascendente. Se soportan múltiples criterios de ordenamiento.'
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: sort.sorted
+          in: query
+          required: false
+          type: boolean
+        - name: sort.unsorted
+          in: query
+          required: false
+          type: boolean
+        - name: tipo
+          in: query
+          description: El tipo de operación
+          required: false
+          type: string
+        - name: tx
+          in: query
+          description: Identificador de la transacción
+          required: false
+          type: string
+        - name: unpaged
+          in: query
+          required: false
+          type: boolean
+        - name: username
+          in: query
+          description: Nombre del usuario que realizó las transacciones
+          required: false
+          type: string
+        - name: valor.equal
+          in: query
+          description: Valor para ser usado en una condición equals. No se usa si el valor es null
+          required: false
+          type: number
+          format: double
+        - name: valor.in
+          in: query
+          description: ' Valor para ser usado en una condición in. No se usa si el valor es null'
+          required: false
+          type: array
+          items:
+            type: number
+            format: double
+          collectionFormat: multi
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OperacionDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/bancolombia/depositar:
+    post:
+      tags:
+        - Bancolombia
+      summary: Permite realizar el depósito en efectivo a cuentas de ahorro y corriente.
+      operationId: realizarDepositoUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: depositoDTO
+          description: depositoDTO
+          required: true
+          schema:
+            $ref: '#/definitions/DepositoDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/bancolombia/pagar-cartera:
+    post:
+      tags:
+        - Bancolombia
+      summary: Permite realizar el pago de créditos del banco.
+      operationId: pagarCarteraUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoCarteraDTO
+          description: pagoCarteraDTO
+          required: true
+          schema:
+            $ref: '#/definitions/PagoCarteraDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/bancolombia/pagar-tarjeta:
+    post:
+      tags:
+        - Bancolombia
+      summary: Permite realizar el pago de una tarjeta de crédito del banco.
+      operationId: pagarTarjetaUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoTarjetaDTO
+          description: pagoTarjetaDTO
+          required: true
+          schema:
+            $ref: '#/definitions/PagoTarjetaDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/bancolombia/retirar:
+    post:
+      tags:
+        - Bancolombia
+      summary: Permite realizar una operación de retiro de dinero. Esta operación requiere el envío de un OTP por parte del banco para poder ser realizada
+      operationId: realizarRetiroUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: retiroSinTarjetaDTO
+          description: retiroSinTarjetaDTO
+          required: true
+          schema:
+            $ref: '#/definitions/RetiroSinTarjetaDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/convenios/buscar:
+    get:
+      tags:
+        - Convenios
+      summary: Permite consultar un convenio si se realiza un pago manual y el cliente no conoce el número de convenio exacto. La búsqueda se puede realizar por parte del código o nombre del convenio. Se retorna una lista con los convenios que concuerden con la búsqueda
+      operationId: buscarConvenioUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: entrada
+          in: query
+          description: entrada
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ConvenioDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/convenios/consulta-pago-barras:
+    post:
+      tags:
+        - Convenios
+      summary: Permite consultar los requisitos y valor de pago de un convenio para pagos por código de barras
+      operationId: consultaConvenioBarrasUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoConvenioDTO
+          description: pagoConvenioDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaConvenioBarrasDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RespConsultaPagoConvenioDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/convenios/consultar-formato:
+    get:
+      tags:
+        - Convenios
+      summary: 'Permite consultar el formato que deben tener los parámetros para el recaudo del convenio. Se requiere para mostrar al cliente las etiquetas correctas, de modo que se facilite la entrega de datos al corresponsal'
+      operationId: consultarFormatoUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: convenio
+          in: query
+          description: El número del convenio
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FormatoConvenio'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/convenios/consultar-pago-manual:
+    post:
+      tags:
+        - Convenios
+      summary: Endpoint que permite consultar los requisitos y valor de pago de un convenio para pagos manuales
+      operationId: consultaConvenioUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoConvenioDTO
+          description: pagoConvenioDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaConvenioDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RespConsultaPagoConvenioDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/convenios/pagar-barras:
+    post:
+      tags:
+        - Convenios
+      summary: Permite realizar recaudo por código de barras de un recibo público o convenio.
+      operationId: pagarConvenioBarrasUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoConvenioBarrasDTO
+          description: pagoConvenioBarrasDTO
+          required: true
+          schema:
+            $ref: '#/definitions/PagoConvenioBarrasDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/convenios/pagar-manual:
+    post:
+      tags:
+        - Convenios
+      summary: Permite realizar el recaudo manual de un recibo público o convenio.
+      operationId: pagarConvenioUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoConvenioDTO
+          description: pagoConvenioDTO
+          required: true
+          schema:
+            $ref: '#/definitions/PagoConvenioDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/cash-in:
+    post:
+      tags:
+        - Daviplata
+      summary: Permite realizar una operación de Cash-In (depósito) a una cuenta Daviplata
+      operationId: cashInUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: cashInDavDTO
+          description: cashInDavDTO
+          required: true
+          schema:
+            $ref: '#/definitions/CashInDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/cash-out:
+    post:
+      tags:
+        - Daviplata
+      summary: Permite realizar una operación de Cash-Out (retiro) de una cuenta Daviplata
+      operationId: cashOutUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: cashOutDavDTO
+          description: cashOutDavDTO
+          required: true
+          schema:
+            $ref: '#/definitions/CashOutDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/consulta-cash-in:
+    post:
+      tags:
+        - Daviplata
+      summary: Permite realizar una consulta previa del costo de realizar un Cash-In (depósito) a una cuenta Daviplata.
+      operationId: consultaCashInUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: consultaCashInDavDTO
+          description: consultaCashInDavDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaCashInDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RespConsultaCashInDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/consulta-deposito:
+    post:
+      tags:
+        - Davivienda
+      summary: Permite consultar el costo de un depósito. Esta consulta se debe realizar obligatoriamente antes de un depósito
+      operationId: consultaDepositoUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: consultaDepositoDTO
+          description: consultaDepositoDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaDepositoDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RespConsultaCostoDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/consulta-productos-propios:
+    post:
+      tags:
+        - Davivienda
+      summary: Permite consultar el valor que se debe pagar por una Tarjeta de Crédito o Crédito de Davivienda
+      operationId: consultaProductosPropiosUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: consultaPorductosPropiosDTO
+          description: consultaPorductosPropiosDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaProductosPropiosDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RespConsultaProdPropiosDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/consulta-retiro:
+    post:
+      tags:
+        - Davivienda
+      summary: Permite consultar el costo de un retiro. Esta consulta se debe realizar obligatoriamente antes de un retiro
+      operationId: consultaRetiroUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: consultaRetiroDTO
+          description: consultaRetiroDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaRetiroDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RespConsultaCostoDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/depositar:
+    post:
+      tags:
+        - Davivienda
+      summary: Permite realizar un depósito en Davivienda
+      operationId: depositoUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: depositoDTO
+          description: depositoDTO
+          required: true
+          schema:
+            $ref: '#/definitions/DepositoDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/productos-propios:
+    post:
+      tags:
+        - Davivienda
+      summary: Permite pagar una Tarjeta de Crédito o Crédito de Davivienda.
+      operationId: productosPropiosUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: pagoProductosDTO
+          description: pagoProductosDTO
+          required: true
+          schema:
+            $ref: '#/definitions/PagoProductosDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/davivienda/retirar:
+    post:
+      tags:
+        - Davivienda
+      summary: Permite realizar un retiro en Davivienda. Se requiere de un OTP generado por la aplicación móvil de Davivienda
+      operationId: retiroUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: retiroDTO
+          description: retiroDTO
+          required: true
+          schema:
+            $ref: '#/definitions/RetiroDavDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/detalle:
+    get:
+      tags:
+        - Historial de Operaciones
+      summary: Permite consultar el detalle de una operación en específico.
+      operationId: consultarDetalleOperacionUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: idTransaccion
+          in: query
+          description: idTransaccion
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionTefDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/disponibles:
+    get:
+      tags:
+        - Historial de Operaciones
+      summary: Permite consultar las operaciones disponibles.
+      operationId: listarTiposOperacionesUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: activa
+          in: query
+          description: Filtro para operaciones activas o inactivas
+          required: false
+          type: boolean
+        - name: idEntidad
+          in: query
+          description: ID de la entidad en el sistema
+          required: false
+          type: integer
+          format: int64
+        - name: idTipoOperacion
+          in: query
+          description: ID del tipo de operación en el sistema
+          required: false
+          type: integer
+          format: int64
+        - name: offset
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: page
+          in: query
+          description: Página de resultados que desea recibir (0..N)
+          required: false
+          type: integer
+          format: int32
+        - name: paged
+          in: query
+          required: false
+          type: boolean
+        - name: pageNumber
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: size
+          in: query
+          description: Número de registros por página
+          required: false
+          type: integer
+          format: int32
+        - name: sort
+          in: query
+          description: 'Criterios de ordenamiento, con formato: propiedad(,asc|desc).El orden por defecto es ascendente. Se soportan múltiples criterios de ordenamiento.'
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: sort.sorted
+          in: query
+          required: false
+          type: boolean
+        - name: sort.unsorted
+          in: query
+          required: false
+          type: boolean
+        - name: unpaged
+          in: query
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EntidadTipoOperacionDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/nequi/consulta-retiro:
+    post:
+      tags:
+        - Nequi
+      summary: Permite consultar el costo de un retiro. Esta consulta se debe realizar obligatoriamente antes de un retiro
+      operationId: consultaRetiroUsingPOST_1
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: consultaCashOutDTO
+          description: consultaCashOutDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ConsultaCashOutDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CashOutConsultRS'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/nequi/depositar:
+    post:
+      tags:
+        - Nequi
+      summary: Permite realizar un depósito en Nequi
+      operationId: depositoUsingPOST_1
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: cashInNequiDTO
+          description: cashInNequiDTO
+          required: true
+          schema:
+            $ref: '#/definitions/CashInNequiDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/nequi/retirar:
+    post:
+      tags:
+        - Nequi
+      summary: Permite realizar un retiro en Nequi
+      operationId: retiroUsingPOST_1
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: cashOutNequiDTO
+          description: cashOutNequiDTO
+          required: true
+          schema:
+            $ref: '#/definitions/CashOutNequiDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/recargas/recargar-celular:
+    post:
+      tags:
+        - Recargas
+      summary: Permite realizar una operación de recarga de celular.
+      operationId: realizarRecargaCelularUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: recargaCelDTO
+          description: recargaCelDTO
+          required: true
+          schema:
+            $ref: '#/definitions/RecargaCelDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/recargas/recargar-pin:
+    post:
+      tags:
+        - Recargas
+      summary: Permite realizar una operación de compra de pines.
+      operationId: realizarRecargaPinUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: recargaPinDTO
+          description: recargaPinDTO
+          required: true
+          schema:
+            $ref: '#/definitions/RecargaPinDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/recargas/recargar-tv:
+    post:
+      tags:
+        - Recargas
+      summary: Permite realizar una operación de recarga de televisión.
+      operationId: realizarRecargaTvUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: recargaTvDTO
+          description: recargaTvDTO
+          required: true
+          schema:
+            $ref: '#/definitions/RecargaTvDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/western-union/buscar:
+    post:
+      tags:
+        - Western Union
+      summary: Permite buscar un envío o pago de un giro. Esta consulta se debe realizar obligatoriamente antes de un pago o envío de giros mediante Western Union
+      operationId: findTransactionUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: dtoReq
+          description: dtoReq
+          required: true
+          schema:
+            $ref: '#/definitions/FindTransactionDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FindTransactionRespDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operaciones/western-union/resolver:
+    post:
+      tags:
+        - Western Union
+      summary: Permite realizar una operación de pago o envío de un giro
+      operationId: resolveTransactionUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/json;charset=UTF-8
+      parameters:
+        - in: body
+          name: dtoReq
+          description: dtoReq
+          required: true
+          schema:
+            $ref: '#/definitions/WesternUnionOpDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OperacionDTO'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/operadores:
+    get:
+      tags:
+        - Operadores y Productos
+      summary: Permite listar los operadores
+      operationId: findAllOperadoresUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OperadorDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  '/pagame-api/v1/operadores/{tipoOperacion}':
+    get:
+      tags:
+        - Operadores y Productos
+      summary: Permite listar los operadores de un tipo de operación
+      operationId: findOperadoresByTipoOperacionUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: tipoOperacion
+          in: path
+          description: El ID del tipo de operación
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OperadorDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/productos:
+    get:
+      tags:
+        - Operadores y Productos
+      summary: Permite listar todos los productos
+      operationId: findAllProductosUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProductoDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/ubicacion/departamentos:
+    get:
+      tags:
+        - Ubicación
+      summary: Permite listar los departamentos
+      operationId: findAllDepartamentosUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/DepartamentoDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/ubicacion/municipios:
+    get:
+      tags:
+        - Ubicación
+      summary: Permite listar los municipios
+      operationId: findAllMunicipiosUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MunicipioDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  '/pagame-api/v1/ubicacion/{idDep}/municipios':
+    get:
+      tags:
+        - Ubicación
+      summary: Permite listar los municipios de un departamento específico
+      operationId: findMunicipiosByDepartamentoUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: idDep
+          in: path
+          description: idDep
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MunicipioDTO'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/foto/link:
+    get:
+      tags:
+        - Usuario
+      summary: Permite generar un link para subir una foto de un usuario
+      operationId: generatePhotoUploadLinkUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: contentLength
+          in: query
+          description: contentLength
+          required: true
+          type: integer
+          format: int64
+        - name: username
+          in: query
+          description: username
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/info-personal:
     put:
       tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
+        - Usuario
+      summary: Permite editar la información personal de un usuario.
+      operationId: editarInfoPersonalUsingPUT
       consumes:
-      - "application/json"
+        - application/json
       produces:
-      - "application/json"
-      - "application/xml"
+        - '*/*'
+        - application/json; charset=UTF-8
       parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
+        - in: body
+          name: info
+          description: info
+          required: true
           schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
+            $ref: '#/definitions/InfoPersonalUpdateDTO'
       responses:
-        default:
-          description: "successful operation"
-  /user:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/info-protegida:
     post:
       tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
+        - Usuario
+      summary: Permite editar la información personal protegida de un usuario.
+      operationId: editarInfoProtegidaUsingPOST
       consumes:
-      - "application/json"
+        - application/json
       produces:
-      - "application/json"
-      - "application/xml"
+        - '*/*'
+        - application/json; charset=UTF-8
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
+        - in: body
+          name: infoProtegidaDTO
+          description: infoProtegidaDTO
+          required: true
+          schema:
+            $ref: '#/definitions/InfoProtegidaDTO'
       responses:
-        default:
-          description: "successful operation"
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/otp:
+    post:
+      tags:
+        - Usuario
+      summary: Permite generar un código OTP necesario para ciertas operaciones.
+      operationId: createResetTokenUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+        - application/json; charset=UTF-8
+      parameters:
+        - in: body
+          name: resetPassReqDTO
+          description: resetPassReqDTO
+          required: true
+          schema:
+            $ref: '#/definitions/OtpTokenReqDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/password:
+    put:
+      tags:
+        - Usuario
+      summary: Permite cambiar la contraseña de un usuario en el sistema.
+      operationId: cambiarPasswordUsingPUT
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+        - application/json; charset=UTF-8
+      parameters:
+        - in: body
+          name: cambioContrasenaDTO
+          description: cambioContrasenaDTO
+          required: true
+          schema:
+            $ref: '#/definitions/CambioContrasenaDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/password/reset:
+    post:
+      tags:
+        - Usuario
+      summary: Permite establecer una contraseña por medio de un código de restablecimiento.
+      operationId: restartPassUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+        - application/json; charset=UTF-8
+      parameters:
+        - in: body
+          name: resetPassDTO
+          description: resetPassDTO
+          required: true
+          schema:
+            $ref: '#/definitions/ResetPassDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
+  /pagame-api/v1/usuarios/ver:
+    get:
+      tags:
+        - Usuario
+      summary: Permite obtener los datos de un usuario en específico.
+      operationId: verUsuarioUsingGET
+      produces:
+        - application/json; charset=UTF-8
+        - application/json;charset=UTF-8
+      parameters:
+        - name: username
+          in: query
+          description: username
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - api_key: []
 securityDefinitions:
   api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
+    type: apiKey
+    name: key
+    in: query
 definitions:
-  ApiResponse:
-    type: "object"
+  BilleteraDTO:
+    type: object
     properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
-      tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
+      cupoDisponible:
+        type: number
+        description: El cupo actualmente disponible para el usuario
+      fechaCompensacion:
+        type: string
+        format: date
+        description: Fecha máxima en la cual el usuario debe realizar su compensación. Puede ser null si el usuario no ha sido activado todavía
+      ganancia:
+        type: number
+        description: La ganancia del día del usuario
+      gananciaMes:
+        type: number
+        description: La ganancia del mes del usuario
+      sobregiro:
+        type: number
+        description: El valor del sobregiro que ha sido asignado al usuario
+      ultimoSaldo:
+        type: number
+        description: El último saldo del usuario en la aplicación
       username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
+        type: string
+        description: Nombre del usuario que es dueño de la billetera
+    title: BilleteraDTO
+  CambioContrasenaDTO:
+    type: object
+    properties:
+      confirPasswordNuevo:
+        type: string
+        description: Confirmación de la nueva contraseña
+      passwordActual:
+        type: string
+        description: Contraseña actual del usuario
+      passwordNuevo:
+        type: string
+        description: Nueva contraseña. Debe cumplir los requisitos de seguridad establecidos
+    title: CambioContrasenaDTO
+  CashInDavDTO:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numDaviplata:
+        type: integer
+        format: int64
+        description: Número de cuenta en Daviplata
+      numIdentificacion:
+        type: string
+        description: Número de identificación del cliente
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      valor:
+        type: integer
+        format: int64
+        description: Valor del Cash-in
+      valorComision:
+        type: integer
+        format: int64
+        description: Valor de la comisión adicional de Daviplata
+    title: CashInDavDTO
+  CashInNequiDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numCuenta:
+        type: string
+        description: Número de la cuenta Nequi del cliente
+        minLength: 9
+        maxLength: 11
+        pattern: '[0-9]+'
+      valor:
+        type: integer
+        format: int32
+        description: Cantidad de dinero de la operación
+        minimum: 1000
+        exclusiveMinimum: false
+    title: CashInNequiDTO
+  CashOutConsultRS:
+    type: object
+    properties:
+      description:
+        type: string
+        description: Descripción de la transacción
+      idConsulta:
+        type: string
+        description: Identificador de la consulta en Págame
+      phoneNumber:
+        type: string
+        description: Número de teléfono del cliente
+      reference:
+        type: string
+        description: Referencia u origen del Cash-Out
+      value:
+        type: string
+        description: Valor del Cash-Out
+    title: CashOutConsultRS
+  CashOutDavDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numDaviplata:
+        type: string
+        description: Número de cuenta en Daviplata
+      otp:
+        type: string
+        description: OTP de 6 dígitos generado por Daviplata
+        minLength: 0
+        maxLength: 6
+      valor:
+        type: integer
+        format: int32
+        description: Valor del Cash-Out
+    title: CashOutDavDTO
+  CashOutNequiDTO:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+        description: Identificador de la consulta previa del Cash-Out
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numCuenta:
+        type: integer
+        format: int64
+        description: Número de la cuenta Nequi del cliente
+      otp:
+        type: string
+        description: OTP enviado al cliente por parte de Nequi
+        minLength: 0
+        maxLength: 8
+      reference:
+        type: string
+        description: Lugar o bolsillo de donde va a salir el dinero. Este es un valor que se obtiene del consumo del endpoint de consulta del Cash-Out
+      valor:
+        type: integer
+        format: int64
+        description: Valor que se va a retirar
+    title: CashOutNequiDTO
+  ConsultaCashInDavDTO:
+    type: object
+    properties:
+      numDaviplata:
+        type: integer
+        format: int64
+        description: Número de cuenta en Daviplata
+      numIdentificacion:
+        type: string
+        description: Identificación del cliente
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      valor:
+        type: number
+        format: double
+        description: Valor de la operación
+    title: ConsultaCashInDavDTO
+  ConsultaCashOutDTO:
+    type: object
+    properties:
+      numCuenta:
+        type: string
+        description: Número de la cuenta Nequi del cliente
+        pattern: \d+
+    title: ConsultaCashOutDTO
+  ConsultaConvenioBarrasDTO:
+    type: object
+    properties:
+      codBarras:
+        type: string
+        description: Código de barras
+      fechaVencimiento:
+        type: string
+        description: Fecha Vencimiento
+      iac:
+        type: string
+        description: Identificador del código de barras
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      referenciaPago1:
+        type: string
+        description: Valor que identifica el pago a realizar
+      referenciaPago2:
+        type: string
+        description: Referencia opcional
+      referenciaPago3:
+        type: string
+        description: Referencia opcional
+      valor:
+        type: string
+        description: Valor del pago a realizar
+        pattern: ^(\d*\.)?\d+$
+    title: ConsultaConvenioBarrasDTO
+  ConsultaConvenioDTO:
+    type: object
+    properties:
+      idEmpresa:
+        type: string
+        description: Identificador de empresa
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      referenciaPago1:
+        type: string
+        description: Valor que identifica el pago a realizar
+        minLength: 1
+        maxLength: 2147483647
+        pattern: '[0-9]+'
+      referenciaPago2:
+        type: string
+        description: Referencia opcional
+      referenciaPago3:
+        type: string
+        description: Referencia opcional
+      valor:
+        type: string
+        description: Valor del pago a realizar
+        pattern: ^(\d*\.)?\d+$
+    title: ConsultaConvenioDTO
+  ConsultaDepositoDavDTO:
+    type: object
+    properties:
+      numCuenta:
+        type: integer
+        format: int64
+        description: El número de cuenta
+      tipoCuenta:
+        type: string
+        description: El tipo de cuenta
+        enum:
+          - AHORROS
+          - CORRIENTE
+      valor:
+        type: number
+        format: double
+        description: Cantidad de dinero a depositar
+        minimum: 1000
+        maximum: 300000
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+    title: ConsultaDepositoDavDTO
+  ConsultaProductosPropiosDavDTO:
+    type: object
+    properties:
+      numIdentificacion:
+        type: integer
+        format: int64
+        description: Identificación del cliente
+      numProducto:
+        type: integer
+        format: int64
+        description: Número de producto a pagar. Para tarjetas de credito se debe enviar el BIN (primeros 6 digitos) y los últimos 4 digitos.
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      tipoProducto:
+        type: string
+        description: Tipo de producto que se va a pagar
+        enum:
+          - CREDITO_CONSUMO
+          - TARJETA_CREDITO
+    title: ConsultaProductosPropiosDavDTO
+  ConsultaRetiroDavDTO:
+    type: object
+    properties:
+      numIdentificacion:
+        type: integer
+        format: int64
+        description: Número de identificación del cliente
+      numTipotransaccion:
+        type: integer
+        format: int32
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      valor:
+        type: number
+        format: double
+        description: Cantidad de dinero a retirar
+        minimum: 1000
+        maximum: 300000
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+    title: ConsultaRetiroDavDTO
+  ContextResponse:
+    type: object
+    properties:
+      codStateTx:
+        type: string
+        description: Estado de la respuesta
+      dateTx:
+        type: string
+        description: Fecha de respuesta
+      idTx:
+        type: string
+        description: Identificador externo de la respuesta
+    title: ContextResponse
+  ConvenioDTO:
+    type: object
+    properties:
+      idCliente:
+        type: integer
+        format: int32
+        description: El ID del cliente que identifica la conexión usada para pagar el convenio. Actualmente sólo se usa para propósitos informativos
+      nombreCliente:
+        type: string
+        description: El nombre de la conexión usada para pagar el convenio. Actualmente sólo se usa para propósitos informativos
+      nombreConvenio:
+        type: string
+        description: El nombre del convenio
+      numeroConvenio:
+        type: string
+        description: El identificador del convenio
+    title: ConvenioDTO
+  CredencialesDTO:
+    type: object
+    properties:
       password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+        type: array
+        description: Contraseña de acceso a la aplicación. Para consultas se retorna un valor vacío
+        items:
+          type: string
+      username:
+        type: string
+        description: Nombre de usuario
+        minLength: 3
+        maxLength: 45
+        pattern: '^[a-zA-Z0-9_]+$'
+    title: CredencialesDTO
+  DepartamentoDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: El ID del departamento
+      nombre:
+        type: string
+        description: El nombre del departamento
+    title: DepartamentoDTO
+  DepositoDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: integer
+        format: int32
+        description: Cantidad de dinero de la operación
+        minimum: 1
+        maximum: 300000
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numCuenta:
+        type: string
+        description: Número de la cuenta bancaria del cliente
+        minLength: 9
+        maxLength: 11
+        pattern: '[0-9]+'
+      tipoCuenta:
+        type: integer
+        format: int32
+        description: 'Tipo de cuenta (0: Cuenta de ahorros, 1 : Cuenta corriente)'
+        minimum: 0
+        maximum: 1
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+    title: DepositoDTO
+  DepositoDavDTO:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+        description: ID de la consulta previa que se realizó antes del depósito
+      idDepositante:
+        type: integer
+        format: int64
+        description: Identificador que se obtiene de la consulta de depósito
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numCuenta:
+        type: integer
+        format: int64
+        description: Número de cuenta
+      tipoCuenta:
+        type: string
+        description: Tipo de cuenta
+        enum:
+          - AHORROS
+          - CORRIENTE
+      valor:
+        type: integer
+        format: int64
+        description: Cantidad de dinero a depositar
+    title: DepositoDavDTO
+  EntidadTipoOperacionDTO:
+    type: object
+    properties:
+      activa:
+        type: boolean
+        description: Indica si la operación se encuentra activa
+      ganancia:
+        type: number
+        description: Valor de ganancia para el corresponsal. Puede ser un porcentaje o valor fijo según el tipoGanancia
+      idEntidad:
+        type: integer
+        format: int64
+        description: ID de la entidad en el sistema
+      idTipoOperacion:
+        type: integer
+        format: int64
+        description: ID del tipo de operación en el sistema
+      maxGanancia:
+        type: number
+        description: Valor máximo de ganancia. Relevante cuando cada corresponsal tiene una tasa diferente de ganancia
+      nombreEntidad:
+        type: string
+        description: Nombre de la entidad
+      nombreTipoOperacion:
+        type: string
+        description: Nombre del tipo de operación
+      tipoGanancia:
+        type: string
+        description: Indica el tipo de ganancia
+        enum:
+          - FIJO
+          - PORCENTAJE
+    title: EntidadTipoOperacionDTO
+  ErrorWU:
+    type: object
+    properties:
+      codError:
+        type: string
+        description: Código de error enviado por Western Union
+      codTypeError:
+        type: string
+        description: Tipo de error enviado por Western Union
+      codTypeSeverity:
+        type: string
+        description: Severidad del error enviada por Western Union
+      descError:
+        type: string
+        description: Descripción del error enviada por Western Union
+    title: ErrorWU
+  Errors:
+    type: object
+    properties:
+      error:
+        type: array
+        description: Listado de errores
+        items:
+          $ref: '#/definitions/ErrorWU'
+    title: Errors
+  FaultResponse:
+    type: object
+    properties:
+      contextResponse:
+        description: Contexto de la respuesta
+        $ref: '#/definitions/ContextResponse'
+      errors:
+        description: Errores
+        $ref: '#/definitions/Errors'
+    title: FaultResponse
+  FindTransactionDTO:
+    type: object
+    properties:
+      identificacion:
+        type: string
+        description: Identificación del cliente
+        minLength: 0
+        maxLength: 20
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      pin:
+        type: string
+        description: PIN entregado al cliente en el Contact Center de Western Union
+        minLength: 0
+        maxLength: 20
+      tipo:
+        type: string
+        description: Especifíca el tipo de operación a la cual se refiere la consulta
+        enum:
+          - ENVIO_GIRO
+          - PAGO_GIRO
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CC
+    title: FindTransactionDTO
+  FindTransactionResp:
+    type: object
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      path:
+        type: string
+      status:
+        type: integer
+        format: int32
+      timestamp:
+        type: string
+      transactionSAFFault:
+        description: Datos de respuesta en caso de error
+        $ref: '#/definitions/FaultResponse'
+      transactionSAFResp:
+        description: Datos de la transacción
+        $ref: '#/definitions/TransactionSAFResp'
+    title: FindTransactionResp
+  FindTransactionRespDTO:
+    type: object
+    properties:
+      resp:
+        description: Respuesta de Western Union
+        $ref: '#/definitions/FindTransactionResp'
+      tx:
+        type: string
+        description: Id interno único de la consulta
+    title: FindTransactionRespDTO
+  FormatoConvenio:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+        description: Identificador interno único de la consulta
+      labelRef1:
+        type: string
+        description: Etiqueta para la Referencia 1
+      labelRef2:
+        type: string
+        description: Etiqueta para la Referencia 2
+      optional4:
+        type: string
+        description: Valor en String de la variable pagoDirecto. Se entrega para propósitos informativos
+      pagoDirecto:
+        type: boolean
+        description: Se debe enviar el pago inmediatamente sin necesidad de consultar el valor
+    title: FormatoConvenio
+  InfoClienteDTO:
+    type: object
+    properties:
+      email:
+        type: string
+        description: email de contacto para notificar la operación
+        minLength: 0
+        maxLength: 100
+      nombre:
+        type: string
+        description: nombre legal del cliente que solicita la operación
+        minLength: 6
+        maxLength: 45
+      telefono:
+        type: string
+        description: teléfono de contacto para notificar la operación
+        minLength: 10
+        maxLength: 10
+    title: InfoClienteDTO
+  InfoPersonalUpdateDTO:
+    type: object
+    properties:
+      correo:
+        type: string
+        description: Correo principal con el cual el usuario está registrado
+      correoAlterno:
+        type: object
+        description: Correo alternativo de contacto. Puede estar vacío
+      fechaExpedicion:
+        type: string
+        format: date
+        description: Fecha de expedición del documento de identificación
+      fechaNacimiento:
+        type: string
+        format: date
+        description: Fecha de nacimiento del usuario
+      identificacion:
+        type: string
+        description: 'Número de identificación del usuario (e.g. #Cédula)'
+        minLength: 4
+        maxLength: 20
+        pattern: '^[A-Za-z0-9][A-Za-z0-9]*$'
+      primerApellido:
+        type: string
+        description: Primer apellido del usuario
+        minLength: 2
+        maxLength: 20
+        pattern: '^[A-Za-z][A-Za-z]*$'
+      primerNombre:
+        type: string
+        description: Primer nombre del usuario
+        minLength: 2
+        maxLength: 20
+        pattern: '^[A-Za-z][A-Za-z]*$'
+      segundoApellido:
+        type: string
+        description: 'Segundo apellido del usuario, puede estar vacio'
+        minLength: 2
+        maxLength: 20
+        pattern: '^[A-Za-z][A-Za-z]*$'
+      segundoNombre:
+        type: string
+        description: 'Segundo nombre del usuario, puede estar vacio'
+        minLength: 2
+        maxLength: 20
+        pattern: '^[A-Za-z][A-Za-z]*$'
+      telefono:
+        type: string
+        description: Número de teléfono fijo del usuario. Puede estar vacío
+        pattern: '^[0-9][0-9]*$'
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del usuario
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - PASAPORTE
+    title: InfoPersonalUpdateDTO
+  InfoProtegidaDTO:
+    type: object
+    properties:
+      celular:
+        type: string
+        description: Número de teléfono celular del usuario
+        minLength: 10
+        maxLength: 10
+        pattern: '^[0-9][0-9]*$'
+      direccion:
+        type: string
+        description: Dirección de residencia del usuario
+        minLength: 0
+        maxLength: 100
+      idMunicipio:
+        type: integer
+        format: int32
+        description: Municipio registrado por el usuario
+      resetToken:
+        type: string
+        description: Token de tipo TOTP que se envía al usuario por algún medio para realizar un restablecimiendo de contraseña
+      token:
+        type: string
+        description: Un token JWT que se envía al usuario cuando solicita un restablecimiendo de contraseña
+      username:
+        type: string
+        description: Nombre de usuario
+    title: InfoProtegidaDTO
+  MovimientoDTO:
+    type: object
+    properties:
+      cupoAnterior:
+        type: number
+        description: Cupo del corresponsal antes de realizar el movimiento
+      cupoPosterior:
+        type: number
+        description: Cupo del corresponsal después de realizar el movimiento
+      fecha:
+        type: string
+        format: date-time
+        description: Fecha en la que se realizó el movimiento
+      ganancia:
+        type: number
+        description: Ganancia de la operación que registró el movimiento
+      monto:
+        type: number
+        description: Valor absoluto del monto del movimiento
+      operacionId:
+        type: string
+        description: UUID de la operación asociada al movimiento
+      reversion:
+        type: boolean
+        description: Indica si el movimiento es una reversión de un movimiento anterior
+      tipoDestino:
+        type: string
+        description: Tipo de destino de la operación asociada al movimiento de dinero
+    title: MovimientoDTO
+  MunicipioDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: El ID del municipio
+      idDepartamento:
+        type: integer
+        format: int32
+        description: El ID del departamento al que pertenece el municipio
+      nombre:
+        type: string
+        description: El nombre del municipio
+    title: MunicipioDTO
+  OperacionDTO:
+    type: object
+    properties:
+      codAprobacion:
+        type: string
+        description: Identificador de operación exitosa
+      destino:
+        type: string
+        description: Identificador del destino de la operación. Su interpretación varía según el tipoDestino
+      detalle:
+        type: string
+        description: Link para acceder al detalle de la operación
+      estado:
+        type: string
+        description: Estado de la transacción
+      fecha:
+        type: string
+        format: date-time
+        description: La fecha en la que la solicitud fue enviada
+      fechaRespuesta:
+        type: string
+        format: date-time
+        description: La fecha en la que la solicitud fue respondida
+      gananciaCorresponsal:
+        type: number
+        description: El valor de ganancia de la operación
+      idMovimiento:
+        type: string
+        description: Identificador que permite consultar el estado de la operación
+      mensaje:
+        type: string
+        description: Mensaje retornado por la entidad financiera aliada
+      mensajeResp:
+        type: string
+        description: Mensaje de respuesta de la transacción
+      monto:
+        type: number
+        description: El valor de la operación
+      nombreCliente:
+        type: string
+        description: Nombre del cliente que solicitó la operación al corresponsal
+      rrn:
+        type: string
+        description: Número de auditoría para el seguimiento de la transacción
+      tipo:
+        type: string
+        description: Tipo de transacción
+      tipoDestino:
+        type: string
+        example: CUENTA CORRIENTE
+        description: Tipo de destino de la operación
+      tx:
+        type: string
+        description: Identificador único de la petición
+      txRespuesta:
+        type: string
+        description: Identificador único de la respuesta
+      username:
+        type: string
+        description: Nombre del usuario que realizó la transacción
+    title: OperacionDTO
+  OperacionTefDTO:
+    type: object
+    properties:
+      codAprobacion:
+        type: string
+        description: Identificador de operación exitosa
+      empresaNit:
+        type: integer
+        format: int64
+        description: NIT de la empresa a la cual va dirigida la operación
+      operacionTx:
+        type: string
+        format: uuid
+        description: Identificación única de la transacción
+      peticion:
+        type: object
+        description: Campo con los datos de la petición a REVAL en formato JSON
+      respuesta:
+        type: object
+        description: Campo con los datos de la respuesta de REVAL en formato JSON
+      username:
+        type: string
+        description: Nombre de usuario del corresponsal que realizó la operación
+    title: OperacionTefDTO
+  OperadorDTO:
+    type: object
+    properties:
+      codigo:
+        type: integer
+        format: int32
+        description: El código del producto en el aliado. Es este código el que debe enviarse para realizar los pagos en los endpoints correspondientes
+      id:
+        type: integer
+        format: int64
+        description: ID en la base de datos
+      nombre:
+        type: string
+        description: Descripción del producto
+        minLength: 0
+        maxLength: 64
+      tipoOperacionId:
+        type: integer
+        format: int32
+        description: ID del tipo de operación para la cual es aplicable el operador
+    title: OperadorDTO
+  OtpTokenReqDTO:
+    type: object
+    properties:
+      cupoAsignado:
+        type: number
+        format: double
+        description: Cupo actualmente asignado como sobregiro
+      fechaExpIdentificacion:
+        type: string
+        description: Fecha de expedición del documento de identidad
+      numeroCuentaAsociada:
+        type: string
+        description: Número de cuenta bancaria asociada por el usuario
+      tipo:
+        type: string
+        description: Tipo de operación para la cual se requiere el OTP. Por defecto es RESET_PASSWORD
+        enum:
+          - EDIT_INFO
+          - RESET_PASSWORD
+      username:
+        type: string
+        description: Nombre de usuario de la persona que solicita el OTP
+    title: OtpTokenReqDTO
+  PagoCarteraDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: integer
+        format: int32
+        description: Cantidad de dinero de la operación
+        minimum: 1
+        maximum: 300000
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      pagare:
+        type: string
+        description: Número de pagaré
+    title: PagoCarteraDTO
+  PagoConvenioBarrasDTO:
+    type: object
+    properties:
+      codBarras:
+        type: string
+        description: Código de barras
+      fechaVencimiento:
+        type: string
+        description: Fecha Vencimiento
+      iac:
+        type: string
+        description: Identificador del código de barras
+      idConsulta:
+        type: string
+        description: Identificador de la consulta de requisitos y valor de pago
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numeroConvenio:
+        type: string
+        description: Número de convenio
+      referenciaPago1:
+        type: string
+        description: Valor que identifica el pago a realizar
+      referenciaPago2:
+        type: string
+        description: Referencia opcional de pago
+      referenciaPago3:
+        type: string
+        description: Referencia opcional de pago
+      valor:
+        type: string
+        description: Valor del pago a realizar
+        pattern: ^(\d*\.)?\d+$
+    title: PagoConvenioBarrasDTO
+  PagoConvenioDTO:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+        description: Identificador de la consulta de requisitos y valor de pago
+      idEmpresa:
+        type: string
+        description: Identificador de empresa
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      referenciaPago1:
+        type: string
+        description: Primera referencia de pago. Obligatoria para todos los convenios
+        minLength: 1
+        maxLength: 2147483647
+        pattern: '[0-9]+'
+      referenciaPago2:
+        type: string
+        description: Referencia opcional de pago
+      referenciaPago3:
+        type: string
+        description: Referencia opcional de pago
+      valor:
+        type: string
+        description: Valor del pago a realizar
+        pattern: ^(\d*\.)?\d+$
+    title: PagoConvenioDTO
+  PagoProductosDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numIdentificacion:
+        type: integer
+        format: int64
+        description: Número de identificación del cliente
+      numProducto:
+        type: integer
+        format: int64
+        description: Número del producto
+      tipoAbono:
+        type: string
+        description: Indica el tipo de pago
+        enum:
+          - INDICADOR_EXTRAORDINARIO
+          - VALOR_MINIMO
+          - VALOR_TOTAL
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - NIT_PERSONA_NATURAL
+      tipoProducto:
+        type: string
+        description: Tipo de producto
+        enum:
+          - CREDITO_CONSUMO
+          - TARJETA_CREDITO
+      valor:
+        type: number
+        format: double
+        description: Valor que paga el cliente
+    title: PagoProductosDTO
+  PagoTarjetaDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: integer
+        format: int32
+        description: Cantidad de dinero a pagar
+        minimum: 1
+        maximum: 300000
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numTC:
+        type: string
+        description: Número de la tarjeta de crédito
+        minLength: 15
+        maxLength: 16
+    title: PagoTarjetaDTO
+  Payment:
+    type: object
+    properties:
+      customer:
+        type: object
+        description: Datos adicionales del cliente que recibe el pago
+      moneyTransfers:
+        type: object
+        description: Datos adicionales de la persona que envía el giro según lo registrado en el Contact Center de Western Union
+      valGMF:
+        type: integer
+        format: int32
+        description: Valor de gravamen a los movimientos financieros
+      valPay:
+        type: integer
+        format: int32
+        description: Valor total que debe entregarse del cliente en un pago de un giro. Este campo debe enviarse como valor al resolver un pago de un giro
+      valueAfterTax:
+        type: integer
+        format: int32
+        description: Valor a pagar después de impuestos
+    title: Payment
+  ProductoDTO:
+    type: object
+    properties:
+      codigo:
+        type: integer
+        format: int32
+        description: El código del producto en el aliado. Es este código el que debe enviarse para realizar los pagos en los endpoints correspondientes
+      descripcion:
+        type: string
+        description: Descripción del producto
+        minLength: 0
+        maxLength: 128
+      id:
+        type: integer
+        format: int64
+        description: ID en la base de datos
+      operadorId:
+        type: integer
+        format: int64
+        description: El ID del operador asociado al producto
+      valor:
+        type: integer
+        format: int64
+        description: El valor del producto (puede ser null si no aplica)
+    title: ProductoDTO
+  RecargaCelDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: object
+        description: Cantidad de dinero a pagar
+      operador:
+        type: integer
+        format: int32
+        description: Código del Operador
+      referencia:
+        type: integer
+        format: int64
+        description: Número celular a recargar
+        minimum: 1000000000
+        maximum: 9999999999
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+    title: RecargaCelDTO
+  RecargaPinDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: integer
+        format: int32
+        description: Cantidad de dinero a pagar
+        minimum: 1
+        maximum: 999999
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      operador:
+        type: integer
+        format: int32
+        description: Código del Operador
+      referencia:
+        type: integer
+        format: int64
+        description: Tipo de Producto. Se obtiene del listado de productos
+      tipoNotificacion:
+        type: string
+        description: Celular o Correo al cuál debe enviarse la notificación del PIN
+        pattern: '(^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$)|[0-9]+'
+    title: RecargaPinDTO
+  RecargaTvDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: object
+        description: Cantidad de dinero a pagar
+      operador:
+        type: integer
+        format: int32
+        description: Código del Operador
+      referencia:
+        type: integer
+        format: int64
+        description: Código de suscripción
+    title: RecargaTvDTO
+  ResetPassDTO:
+    type: object
+    properties:
+      confirPasswordNuevo:
+        type: string
+        description: Confirmación de la contraseña nueva
+      passwordNuevo:
+        type: string
+        description: Contraseña nueva
+      resetToken:
+        type: string
+        description: Token de tipo TOTP que se envía al usuario por algún medio para realizar un restablecimiendo de contraseña
+      token:
+        type: string
+        description: Un token JWT que se envía al usuario cuando solicita un restablecimiento de contraseña
+      username:
+        type: string
+        description: Nombre de usuario
+    title: ResetPassDTO
+  RespConsultaCashInDTO:
+    type: object
+    properties:
+      codigoConvenio:
+        type: integer
+        format: int64
+        description: Código del convenio para pago de Cash-In
+      idCliente:
+        type: integer
+        format: int64
+        description: Identificación del cliente
+      idConsulta:
+        type: string
+      nombreTitular:
+        type: string
+        description: Nombre del titular de la cuenta
+      tipoIdCliente:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      valorCobro:
+        type: number
+        format: double
+        description: Valor adicional de comisión
+    title: RespConsultaCashInDTO
+  RespConsultaCostoDTO:
+    type: object
+    properties:
+      apellidoTitular:
+        type: string
+        description: Apellido del titular de la cuenta
+      idCliente:
+        type: integer
+        format: int64
+        description: 'Identificación del cliente, se utiliza para realiza el depósito o retiro'
+      idConsulta:
+        type: string
+        description: Identificador interno único de la consulta
+      nombreTitular:
+        type: string
+        description: Nombre del titular de la cuenta
+      numCuenta:
+        type: string
+        example: 323234XXXXXXX
+        description: Número de cuenta enmascarado
+      tipoCuenta:
+        type: string
+        description: El tipo de cuenta
+        enum:
+          - AHORROS
+          - CORRIENTE
+      tipoIdCliente:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      valorCobro:
+        type: number
+        format: double
+        description: 'Valor adicional que se cobra de por la transacción, depósito o retiro'
+    title: RespConsultaCostoDTO
+  RespConsultaPagoConvenioDTO:
+    type: object
+    properties:
+      consecutivoTx:
+        type: string
+        description: Identificador externo único de la consulta
+      decrementarValor:
+        type: boolean
+        description: Indica que el cliente puede pagar un valor más bajo que el que retorna la consulta
+      idCliente:
+        type: string
+        description: El ID del cliente que identifica la conexión usada para pagar el convenio. Actualmente sólo se usa para propósitos informativos
+      idConsulta:
+        type: string
+        description: Identificador interno único de la consulta
+      incremValor:
+        type: boolean
+        description: Indica que el cliente puede pagar un valor más alto que el que retorna la consulta
+      nombreConvenio:
+        type: string
+        description: El nombre del convenio
+      numeroConvenio:
+        type: string
+        description: El identificador del convenio
+      opcional1:
+        type: string
+        description: Campo opcional 1. La interpretación de los campos opcionales puede variar según el tipo de convenio
+      opcional2:
+        type: string
+        description: Campo opcional 2
+      opcional3:
+        type: string
+        description: Campo opcional 3
+      opcional4:
+        type: string
+        description: Campo opcional 4
+      opcional5:
+        type: string
+        description: Campo opcional 5
+      opcional6:
+        type: string
+        description: Campo opcional 6
+      opcional7:
+        type: string
+        description: Campo opcional 7
+      valor:
+        type: number
+        format: double
+        description: El valor que se debe pagar
+    title: RespConsultaPagoConvenioDTO
+  RespConsultaProdPropiosDTO:
+    type: object
+    properties:
+      apellidoTitular:
+        type: string
+        description: Apellido del titular
+      nombreTitular:
+        type: string
+        description: Nombre del titular
+      numCantidadProductos:
+        type: integer
+        format: int32
+        description: Cantidad de productos propios del cliente
+      numIdentificacion:
+        type: integer
+        format: int64
+        description: Identificación del cliente
+      numProducto:
+        type: string
+        description: Número del producto
+      permitidoAbonoExtraordinario:
+        type: boolean
+        description: Indica si permite realizar abonos por fuera de las cuotas ordinarias
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      tipoProducto:
+        type: string
+        description: Tipo de producto
+        enum:
+          - CREDITO_CONSUMO
+          - TARJETA_CREDITO
+      tipoSubProducto:
+        type: integer
+        format: int32
+        description: ID del tipo de subproducto
+      valorCobro:
+        type: number
+        format: double
+        description: Valor que debe pagar el cliente en la transacción
+      valorPagoMinimo:
+        type: number
+        format: double
+        description: Valor mínimo que puede pagar el cliente
+      valorPagoTotal:
+        type: number
+        format: double
+        description: Valor total de la deuda del producto
+    title: RespConsultaProdPropiosDTO
+  ResumenDiarioDTO:
+    type: object
+    properties:
+      fecha:
+        type: string
+        format: date
+        description: La fecha del registro
+      gananciaAcumulada:
+        type: number
+        description: Valor acumulado de ganancia desde el registro en la aplicación
+      gananciaDia:
+        type: number
+        description: Ganancia diaria del corresponsal
+      username:
+        type: string
+        description: Nombre de usuario del usuario asociado
+    title: ResumenDiarioDTO
+  RetiroDavDTO:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+        description: ID de la consulta previa que se realizó antes del retiro
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numCuenta:
+        type: string
+        description: Número de cuenta
+      numDocumento:
+        type: integer
+        format: int64
+        description: Identificación del cliente
+      otp:
+        type: integer
+        format: int32
+        description: Clave de un sólo uso de 8 dígitos generado por la aplicación de Davivienda
+      tipoCuenta:
+        type: string
+        description: Tipo de cuenta
+        enum:
+          - AHORROS
+          - CORRIENTE
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CEDULA
+          - CEDULA_EXTRANJERIA
+          - NIT
+          - REGISTRO_CIVIL
+          - TARJETA_IDENTIDAD
+      valor:
+        type: integer
+        format: int32
+        description: Valor del retiro
+    title: RetiroDavDTO
+  RetiroSinTarjetaDTO:
+    type: object
+    properties:
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      monto:
+        type: integer
+        format: int32
+        description: Monto a retirar
+        minimum: 1
+        maximum: 300000
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      numCuenta:
+        type: string
+        description: Número de cuenta de la cual se va a retirar
+        minLength: 9
+        maxLength: 12
+      otp:
+        type: string
+        description: Contraseña de un solo uso enviada por el banco para hacer el retiro
+        minLength: 6
+        maxLength: 6
+    title: RetiroSinTarjetaDTO
+  SendMoneyTransfer:
+    type: object
+    properties:
+      customer:
+        type: object
+        description: Datos adicionales del cliente que envía el giro
+      moneyTransfer:
+        type: object
+        description: Datos adicionales de la persona que envía el giro y de la que recibe el giro según lo registrado en el Contact Center de Western Union
+      totalValue:
+        type: integer
+        format: int32
+        description: Valor total que debe recibirse del cliente en un envío de un giro. Este campo debe enviarse como valor al resolver un envío de un giro
+      totalValueBeforeTax:
+        type: integer
+        format: int32
+        description: Valor antes de impuestos
+      totalValueTax:
+        type: integer
+        format: int32
+        description: Valor de los impuestos
+    title: SendMoneyTransfer
+  TransaccionResumenDTO:
+    type: object
+    properties:
+      fecha:
+        type: string
+        format: date
+        description: La fecha del registro
+      numTransacciones:
+        type: integer
+        format: int32
+        description: Conteo de transacciones
+      username:
+        type: string
+        description: Nombre de usuario del usuario asociado
+    title: TransaccionResumenDTO
+  TransactionSAFResp:
+    type: object
+    properties:
+      codTypeTx:
+        type: string
+        description: Indica el tipo de operación. EGI_SAF para envíos y PGI_SAF para pagos
+      contextResponse:
+        $ref: '#/definitions/ContextResponse'
+      payment:
+        description: Información del pago del giro. Sólo activa cuando la operación es de tipo PGI_SAF
+        $ref: '#/definitions/Payment'
+      sendMoneyTransfer:
+        description: Información del envío del giro. Sólo activa cuando la operación es de tipo EGI_SAF
+        $ref: '#/definitions/SendMoneyTransfer'
+    title: TransactionSAFResp
+  WesternUnionOpDTO:
+    type: object
+    properties:
+      idConsulta:
+        type: string
+        description: Especifíca el ID de la consulta FindTransaction realizada antes de esta transacción
+      identificacion:
+        type: string
+        description: Identificación del cliente
+        minLength: 0
+        maxLength: 20
+      infoCliente:
+        description: Información del cliente
+        $ref: '#/definitions/InfoClienteDTO'
+      lat:
+        type: number
+        format: float
+        description: Latitud geográfica donde se realiza la operación
+        minimum: -90
+        maximum: 90
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      lon:
+        type: number
+        format: float
+        description: Longitud geográfica donde se realiza la operación
+        minimum: -180
+        maximum: 180
+        exclusiveMinimum: false
+        exclusiveMaximum: false
+      otp:
+        type: integer
+        format: int32
+        description: OTP enviado al celular del cliente después de la operación findTransaction
+      pin:
+        type: string
+        description: PIN entregado al cliente en el Contact Center de Western Union
+        minLength: 0
+        maxLength: 20
+      tipo:
+        type: string
+        description: Especifíca el tipo de operación
+        enum:
+          - ENVIO_GIRO
+          - PAGO_GIRO
+      tipoIdentificacion:
+        type: string
+        description: Tipo de identificación del cliente
+        enum:
+          - CC
+      valor:
+        type: number
+        format: double
+        description: Especifíca el valor reportado de la transacción. Debe ser positivo
+    title: WesternUnionOpDTO
+x-google-endpoints:
+  - name: pagame-test.appspot.com
+    allowCors: 'True'
