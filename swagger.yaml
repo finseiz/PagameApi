@@ -3,6 +3,10 @@ info:
   description: Pagame Api
   version: '1.0'
   title: Pagame Api
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
 host: pagame-test.appspot.com
 basePath: /
 tags:
@@ -12,6 +16,10 @@ tags:
     description: Provee las funcionalidades requeridas para consultar información directamente sobre la billetera del usuario. La billetera contiene los movimientos y el saldo actual del corresponsal o aliado
   - name: Convenios
     description: 'Provee las funcionalidades requeridas para buscar y pagar facturas mediante convenios. Esta operación se conoce como recaudo, y puede ir desde el pago de una factura de servicios públicos hasta el pago de una matrícula. Se soporta el pago de convenios de forma manual y mediante código de barras. Los detalles de cada operación se encuentran en cada endpoint'
+  - name: Daviplata
+    description: Provee las funcionalidades requeridas para realizar operaciones con Daviplata. Los detalles de cada operación se encuentran en cada endpoint
+  - name: Davivienda
+    description: Provee las funcionalidades requeridas para realizar operaciones con Davivienda. Los detalles de cada operación se encuentran en cada endpoint
   - name: Historial de Operaciones
     description: Provee las funcionalidades requeridas para consultar el historial de operaciones de los usuarios
   - name: Nequi
@@ -20,22 +28,20 @@ tags:
     description: Provee las funcionalidades requeridas para realizar consultas de operadores y productos
   - name: Recargas
     description: 'Provee las funcionalidades requeridas para realizar recargas de contenido (TV, celular y pines). Los detalles de cada operación se encuentran en cada endpoint. Los códigos de operadores y productos se deben obtener de /api/operadores y /api/productos. Favor consultar la documentación respectiva'
+  - name: Sesiones
+    description: Provee las funcionalidades para gestionar sesiones en la aplicación. Permite realizar funciones básicas como el inicio y el cierre de sesión
   - name: Ubicación
     description: Provee las funcionalidades requeridas para consultar el listado de municipios y departamentos soportados por el sistema
   - name: Usuario
     description: Provee las funcionalidades requeridas para acceder y modificar los datos de los usuarios
   - name: Western Union
     description: Provee las funcionalidades requeridas para realizar operaciones con Western Union. Los detalles de cada operación se encuentran en cada endpoint
-  - name: davivienda-ext-resource
-    description: Provee las funcionalidades requeridas para realizar operaciones con Davivienda y Daviplata. Los detalles de cada operación se encuentran en cada endpoint
-  - name: sesion-resource
-    description: Sesion Resource
 paths:
   /api/login:
     post:
       tags:
-        - sesion-resource
-      summary: Permite iniciar la sesión de un usuario en la aplicación.
+        - Sesiones
+      summary: 'Permite iniciar la sesión de un usuario en la aplicación. En caso exitoso, se entrega un token JWT como respuesta'
       operationId: loginUsingPOST
       consumes:
         - application/json
@@ -67,8 +73,8 @@ paths:
   /api/sessions/cerrar:
     post:
       tags:
-        - sesion-resource
-      summary: Permite cerrar la sesión de un usuario en la aplicación.
+        - Sesiones
+      summary: Permite cerrar la sesión de un usuario en la aplicación
       operationId: cerrarSesionUsingPOST
       consumes:
         - application/json
@@ -93,8 +99,8 @@ paths:
   /api/sessions/reactivar:
     post:
       tags:
-        - sesion-resource
-      summary: 'Permite reactivar la sesión de un usuario '
+        - Sesiones
+      summary: Permite reactivar la sesión de un usuario
       operationId: reactivarSesionUsingPOST
       consumes:
         - application/json
@@ -1194,7 +1200,7 @@ paths:
           description: Not Found
       security:
         - api_key: []
-  /pagame-api/v1/operaciones/davivienda/cash-in:
+  /pagame-api/v1/operaciones/daviplata/cash-in:
     post:
       tags:
         - Daviplata
@@ -1227,7 +1233,7 @@ paths:
           description: Not Found
       security:
         - api_key: []
-  /pagame-api/v1/operaciones/davivienda/cash-out:
+  /pagame-api/v1/operaciones/daviplata/cash-out:
     post:
       tags:
         - Daviplata
@@ -1260,7 +1266,7 @@ paths:
           description: Not Found
       security:
         - api_key: []
-  /pagame-api/v1/operaciones/davivienda/consulta-cash-in:
+  /pagame-api/v1/operaciones/daviplata/consulta-cash-in:
     post:
       tags:
         - Daviplata
